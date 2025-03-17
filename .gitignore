@@ -1,3 +1,4 @@
-node_modules
-.env
-npm-debug.log
+// filepath: /workspaces/heroku_sarbot/.gitignore
+venv/
+__pycache__/
+*.pyc
