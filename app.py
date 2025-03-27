@@ -35,11 +35,10 @@ async def slack_events(request: Request):
 # Start both FastAPI and Socket Mode Handler
 if __name__ == "__main__":
     # For development: Socket Mode
-    slack_app.client.apps_connections_open()
+    # slack_app.client.apps_connections_open()
 
-    if os.environ.get("SOCKET_MODE", "false").lower() == "true":
-        handler = SocketModeHandler(slack_app, os.environ["SLACK_APP_TOKEN"])
-        handler.connect()
+    # if os.environ.get("SOCKET_MODE", "false").lower() == "true":
+    SocketModeHandler(slack_app, os.environ["SLACK_APP_TOKEN"]).start()
 
     # Start FastAPI with uvicorn
     import uvicorn
