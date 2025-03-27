@@ -1,19 +1,14 @@
 import os
-import logging
-
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
-from listeners import register_listeners
+slack_bot_token = os.environ["SLACK_BOT_TOKEN"]
 
-logging.basicConfig(level=logging.DEBUG)
+print(slack_bot_token)
 
-# Initialization
-app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
+# Initializes your app with your bot token and socket mode handler
+app = App(token=slack_bot_token)
 
-# Register Listeners
-register_listeners(app)
-
-# Start Bolt app
+# Start your app
 if __name__ == "__main__":
-    SocketModeHandler(app, os.environ.get("SLACK_APP_TOKEN")).start()
+    SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
