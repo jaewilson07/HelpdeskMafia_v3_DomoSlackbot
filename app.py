@@ -1,43 +1,41 @@
-from requests import request, Request
+
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_bolt.adapter.fastapi import SlackRequestHandler
 
 # Initialize FastAPI app
-# api = FastAPI()
+api = FastAPI()
 
 # Initialize Slack Bolt app
 slack_app = App(token=os.environ["SLACK_BOT_TOKEN"],
-                signing_secret=os.environ['SLACK_SIGNING_SECRET'])
+                signing_secret=os.environ["SLACK_SIGNING_SECRET"])
 
+# Set up request handler
+handler = SlackRequestHandler(slack_app)
 
 @slack_app.message("hello")
 def message_hello(message, say):
     say(f"Hey there <@{message['user']}>!")
 
+# FastAPI endpoints
+@api.get("/")
+async def root():
+    return {"message": "Slack Bot API is running"}
 
-# handler = SlackRequestHandler(slack_app)
-
-# # FastAPI endpoints
-# @api.get("/")
-# async def root():
-#     return {"message": "Slack Bot API is running"}
-
-# # Forward Slack events to Bolt app
-# @api.post("/slack/events")
-# async def slack_events(request: Request):
-#     return await handler.handle(request)
+# Forward Slack events to Bolt app
+@api.post("/slack/events")
+async def slack_events(request: Request):
+    return await handler.handle(request)
 
 # Start both FastAPI and Socket Mode Handler
 if __name__ == "__main__":
-    slack_app.start(port=int(os.environ.get("PORT", 3000)))
-
-    # Start Socket Mode Handler in background
-    # handler = SocketModeHandler(slack_app, os.environ["SLACK_APP_TOKEN"])
-    # handler.connect()
-
+    # For development: Socket Mode
+    if os.environ.get("SOCKET_MODE", "false").lower() == "true":
+        handler = SocketModeHandler(slack_app, os.environ["SLACK_APP_TOKEN"])
+        handler.connect()
+    
     # Start FastAPI with uvicorn
-    # import uvicorn
-    # uvicorn.run(api, host="0.0.0.0", port=5000)
+    import uvicorn
+    uvicorn.run(api, host="0.0.0.0", port=5000)
