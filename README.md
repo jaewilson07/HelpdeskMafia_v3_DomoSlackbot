@@ -1,23 +1,25 @@
-<<<<<<< HEAD
 # Bolt for Python Template App
 
 This is a generic Bolt for Python template app used to build out Slack apps.
 
 Before getting started, make sure you have a development workspace where you have permissions to install apps. If you don’t have one setup, go ahead and [create one](https://slack.com/create).
+
 ## Installation
 
 #### Create a Slack App
+
 1. Open [https://api.slack.com/apps/new](https://api.slack.com/apps/new) and choose "From an app manifest"
 2. Choose the workspace you want to install the application to
-3. Copy the contents of [manifest.json](./manifest.json) into the text box that says `*Paste your manifest code here*` (within the JSON tab) and click *Next*
-4. Review the configuration and click *Create*
-5. Click *Install to Workspace* and *Allow* on the screen that follows. You'll then be redirected to the App Configuration dashboard.
+3. Copy the contents of [manifest.json](./manifest.json) into the text box that says `*Paste your manifest code here*` (within the JSON tab) and click _Next_
+4. Review the configuration and click _Create_
+5. Click _Install to Workspace_ and _Allow_ on the screen that follows. You'll then be redirected to the App Configuration dashboard.
 
 #### Environment Variables
+
 Before you can run the app, you'll need to store some environment variables.
 
 1. Open your apps configuration page from this list, click **OAuth & Permissions** in the left hand menu, then copy the Bot User OAuth Token. You will store this in your environment as `SLACK_BOT_TOKEN`.
-2. Click ***Basic Information** from the left hand menu and follow the steps in the App-Level Tokens section to create an app-level token with the `connections:write` scope. Copy this token. You will store this in your environment as `SLACK_APP_TOKEN`.
+2. Click **\*Basic Information** from the left hand menu and follow the steps in the App-Level Tokens section to create an app-level token with the `connections:write` scope. Copy this token. You will store this in your environment as `SLACK_APP_TOKEN`.
 
 ```zsh
 # Replace with your app token and bot token
@@ -26,6 +28,7 @@ export SLACK_APP_TOKEN=<your-app-token>
 ```
 
 ### Setup Your Local Project
+
 ```zsh
 # Clone this project onto your machine
 git clone https://github.com/slack-samples/bolt-python-starter-template.git
@@ -45,6 +48,7 @@ python3 app.py
 ```
 
 #### Linting
+
 ```zsh
 # Run flake8 from root directory for linting
 flake8 *.py && flake8 listeners/
@@ -54,6 +58,7 @@ black .
 ```
 
 #### Testing
+
 ```zsh
 # Run pytest from root directory for unit testing
 pytest .
@@ -79,7 +84,7 @@ Only implement OAuth if you plan to distribute your application across multiple 
 
 When using OAuth, Slack requires a public URL where it can send requests. In this template app, we've used [`ngrok`](https://ngrok.com/download). Checkout [this guide](https://ngrok.com/docs#getting-started-expose) for setting it up.
 
-Start `ngrok` to access the app on an external network and create a redirect URL for OAuth. 
+Start `ngrok` to access the app on an external network and create a redirect URL for OAuth.
 
 ```
 ngrok http 3000
@@ -96,6 +101,3 @@ Navigate to **OAuth & Permissions** in your app configuration and click **Add a 
 ```
 https://3cb89939.ngrok.io/slack/oauth_redirect
 ```
-=======
-pip freeze > requirements.txt
->>>>>>> f263f4b3f0b3e24ed0dff3cb276b912cf8935a56
