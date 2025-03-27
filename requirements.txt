@@ -2,3 +2,6 @@ slack-bolt
 pytest
 flake8
 black
+fastapi
+slack-sdk
+uvicorn
