@@ -5,3 +5,4 @@ black
 fastapi
 slack-sdk
 uvicorn
+requests
