@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 slack-bolt
 pytest
 flake8
 black
+=======
+flask
+>>>>>>> f263f4b3f0b3e24ed0dff3cb276b912cf8935a56

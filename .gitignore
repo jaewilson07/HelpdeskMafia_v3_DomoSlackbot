@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # general things to ignore
 build/
 dist/
@@ -37,3 +38,11 @@ logs/
 *.db
 .pytype/
 .idea/
+=======
+// filepath: /workspaces/heroku_sarbot/.gitignore
+venv/
+__pycache__/
+*.pyc
+
+.env
+>>>>>>> f263f4b3f0b3e24ed0dff3cb276b912cf8935a56

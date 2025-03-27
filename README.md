@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Bolt for Python Template App
 
 This is a generic Bolt for Python template app used to build out Slack apps.
@@ -95,3 +96,6 @@ Navigate to **OAuth & Permissions** in your app configuration and click **Add a 
 ```
 https://3cb89939.ngrok.io/slack/oauth_redirect
 ```
+=======
+pip freeze > requirements.txt
+>>>>>>> f263f4b3f0b3e24ed0dff3cb276b912cf8935a56
