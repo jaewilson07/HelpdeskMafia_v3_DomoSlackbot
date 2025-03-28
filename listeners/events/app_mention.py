@@ -1,7 +1,8 @@
-
+from slack_bolt.async_app import AsyncSay
 import utils
 
-async def app_mention_callback(event, say):
+
+async def app_mention_callback(event, say: AsyncSay):
     message_id = event["ts"]
     user_id = event["user"]
     channel_id = event["channel"]
@@ -9,9 +10,9 @@ async def app_mention_callback(event, say):
     clean_question = utils.remove_slack_user_mentions(question)
 
     await say(
-        f'<@{user_id}> asked: "{clean_question}"\nGive me a sec to think about it. But in the meantime, have you tried googling it?',
-        thread_ts=message_id,
-    )
+        f'Hello <@{user_id}> instead of asking me a question, use a /slash command!\n\n ```/question #search my llm for the answer to your question.```',
+        thread_ts=message_id)
+
 
 def register(app):
     app.event("app_mention")(app_mention_callback)

@@ -27,6 +27,12 @@
                 "command": "/question",
                 "description": "ask a question",
                 "should_escape": false
+            },
+            {
+                "command": "/backup_history",
+                "description": "backs up a channel's history",
+                "usage_hint": "num_days channel_id",
+                "should_escape": false
             }
         ]
     },
