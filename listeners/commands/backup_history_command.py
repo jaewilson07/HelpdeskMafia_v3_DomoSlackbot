@@ -26,13 +26,13 @@ async def get_channel_history(
         # Calculate timestamps for filtering
         now = int(time.time())
         oldest = now - (days * 24 * 60 * 60)  # Convert days to seconds
-        
+
         result = await async_slack_app.client.conversations_history(
             channel=channel_id,
             limit=100,  # Adjust limit as needed
             cursor=cursor,
-            oldest=oldest,
-            latest=now)
+            oldest=str(oldest),
+            latest=str(now))
 
         messages.extend(result["messages"])
 
@@ -105,11 +105,11 @@ async def backup_command_callback(command, ack: AsyncAck, say: AsyncSay,
             return
 
         # Perform backup
-        backup_data, found_channel_name = await ba(
-            channel_id, days)
+        backup_data, found_channel_name = await get_channel_history(
+            async_slack_app=app, channel_id=channel_id, days=days)
 
         # Upload backup file
-        await slack_client.files_upload_v2(
+        await app.client.files_upload_v2(
             channel=user_id,
             filename=f"backup_{found_channel_name}.json",
             content=backup_data,
