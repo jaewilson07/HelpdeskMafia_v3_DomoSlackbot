@@ -5,11 +5,11 @@ from slack_bolt.async_app import AsyncAck, AsyncApp as AsyncSlackApp, AsyncSay,
 
 async def get_channel_history(
     async_slack_app: AsyncSlackApp,
-    channel_id,
+    channel_id: str,
     days: int = 7,
     cursor=None,
     messages: list = None,
-):
+) -> tuple[list, str]:
     """
     Retrieves channel history from Slack using the conversations.history method.
     
@@ -105,17 +105,29 @@ async def backup_command_callback(command, ack: AsyncAck, say: AsyncSay,
             return
 
         # Perform backup
-        backup_data, found_channel_name = await get_channel_history(
+        messages = await get_channel_history(
             async_slack_app=app, channel_id=channel_id, days=days)
+
+        # Prepare backup data
+        backup_data = {
+            "channel": channel_name,
+            "days": days,
+            "message_count": len(messages),
+            "messages": messages
+        }
+
+        # Format as JSON
+        import json
+        formatted_data = json.dumps(backup_data, indent=2)
 
         # Upload backup file
         await app.client.files_upload_v2(
             channel=user_id,
-            filename=f"backup_{found_channel_name}.json",
-            content=backup_data,
-            title=f"Channel Backup for #{found_channel_name}",
+            filename=f"backup_{channel_name}.json",
+            content=formatted_data,
+            title=f"Channel Backup for #{channel_name}",
             initial_comment=
-            f"Here's your backup of #{found_channel_name} for the last {days} days. Contains {backup_data['message_count']} messages."
+            f"Here's your backup of #{channel_name} for the last {days} days. Contains {len(messages)} messages."
         )
 
     except Exception as e:
