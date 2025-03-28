@@ -13,14 +13,7 @@ async def test_domo_auth_token_validation():
     with patch('domolibrary.client.DomoAuth.DomoAuth') as mock_auth_class:
         mock_auth_class.return_value = mock_domo_auth
         
-        # Test parameters
-        test_params = {
-            "question": "test question",
-            "channel_id": "test_channel",
-            "message_id": "test_message",
-            "user_id": "test_user"
-        }
-        
+       
         # Execute the function
         with patch('os.environ', {'DOMO_ACCESS_TOKEN': 'test_token', 'DOMO_INSTANCE': 'test_instance'}):
             await trigger_domo_llms_workflow(**test_params)
