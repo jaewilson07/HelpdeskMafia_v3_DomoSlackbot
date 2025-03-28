@@ -29,9 +29,9 @@
                 "should_escape": false
             },
             {
-                "command": "/backup_history",
+                "command": "/backup",
                 "description": "backs up a channel's history",
-                "usage_hint": "num_days channel_id",
+                "usage_hint": "#channel_id num_days",
                 "should_escape": false
             }
         ]
