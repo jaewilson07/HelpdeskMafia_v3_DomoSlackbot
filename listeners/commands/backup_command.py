@@ -5,7 +5,7 @@ from typing import Union, Tuple
 import utils as ut
 
 
-async def validate_backup_history_command(app, parts) -> Tuple[str, int]:
+async def validate_backup_history_command(client, parts) -> Tuple[str, str, int]:
     """retrieves channel_id and days to extract from comman"""
     
     channel_id,channel_name, days = None, None, None
@@ -42,7 +42,7 @@ async def validate_backup_history_command(app, parts) -> Tuple[str, int]:
 async def backup_command_callback(command, 
                                   ack: AsyncAck,
                                   say: AsyncSay,
-                                  app: AsyncSlackApp,
+                                  client,
                                   logger: Logger):
 
     await ack()
@@ -57,7 +57,7 @@ async def backup_command_callback(command,
     channel_id,channel_name, days = None, None , None
 
     try:
-        channel_id,channel_name, days = await validate_backup_history_command(app, parts)
+        channel_id,channel_name, days = await validate_backup_history_command(client, parts)
 
     except ut.ValidationError as e:
         await say(e.message, channel=user_id, response_type = 'ephemeral')

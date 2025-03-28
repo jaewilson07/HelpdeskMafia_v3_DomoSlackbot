@@ -10,10 +10,10 @@ class ValidationError(Exception):
         super().__init__(message)
 
 
-async def get_channel_id_from_name(async_slack_app: AsyncSlackApp,
+async def get_channel_id_from_name(client,
                                    channel_name) -> Union[str, None]:
     """retrieves channel_id from a list of public and private channels"""
-    channel_list = await async_slack_app.client.conversations_list(
+    channel_list = await client.conversations_list(
         types="public_channel,private_channel")
 
     return next((channel['id'] for channel in channel_list.get('channels', [])
