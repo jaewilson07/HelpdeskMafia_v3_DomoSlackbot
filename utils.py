@@ -12,16 +12,24 @@ class ValidationError(Exception):
 
 async def get_channel_id_from_name(client,
                                    channel_name) -> Union[str, None]:
+
+    if channel_name.startswith('#'):
+        channel_name = channel_name[1:]
+    
     """retrieves channel_id from a list of public and private channels"""
     channel_list = await client.conversations_list(
-        types="public_channel,private_channel")
+        types="public_channel,private_channel,mpim,im")
 
-    return next((channel['id'] for channel in channel_list.get('channels', [])
+    channel_id =  next((channel['id'] for channel in channel_list.get('channels', [])
                  if channel['name'] == channel_name), None)
+
+    print(channel_name, channel_id, [channel.get('name') for channel in channel_list.get('channels', [])])
+    
+    return channel_id
 
 
 async def get_channel_history(
-    async_slack_app: AsyncSlackApp,
+    client,
     channel_id: str,
     days: int = 7,
     cursor=None,
@@ -31,7 +39,7 @@ async def get_channel_history(
     Retrieves channel history from Slack using the conversations.history method.
 
     Args:
-        async_slack_app: The Slack app instance
+        client: async client
         channel_id: The channel ID to fetch history from
         days: Number of days to look back (default: 7)
         cursor: Pagination cursor
@@ -44,7 +52,7 @@ async def get_channel_history(
         now = int(time.time())
         oldest = now - (days * 24 * 60 * 60)  # Convert days to seconds
 
-        result = await async_slack_app.client.conversations_history(
+        result = await client.conversations_history(
             channel=channel_id,
             limit=100,  # Adjust limit as needed
             cursor=cursor,
@@ -56,7 +64,7 @@ async def get_channel_history(
         next_cursor = result.get("response_metadata", {}).get("next_cursor")
 
         if next_cursor:
-            await get_channel_history(async_slack_app,
+            await get_channel_history(client,
                                       channel_id,
                                       next_cursor,
                                       messages=messages)

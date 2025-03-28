@@ -5,11 +5,16 @@ from typing import Union, Tuple
 import utils as ut
 
 
-async def validate_backup_history_command(client, parts) -> Tuple[str, str, int]:
+async def validate_backup_history_command(client, command : str) -> Tuple[str, str, int]:
     """retrieves channel_id and days to extract from comman"""
     
     channel_id,channel_name, days = None, None, None
 
+
+    parts = command.split()
+
+    print(command, parts)
+    
     # Validate command format
     if len(parts) < 2:
         raise ut.ValidationError(
@@ -31,7 +36,8 @@ async def validate_backup_history_command(client, parts) -> Tuple[str, str, int]
         raise ut.ValidationError(
             "Invalid command format. Use: /backup #channel_name days")
 
-    channel_id = await ut.get_channel_id_from_name(app, channel_name)
+
+    channel_id = await ut.get_channel_id_from_name(client, channel_name)
 
     if not channel_id:
         raise ut.ValidationError( f"Could not find channel '{channel_name}'. Make sure the bot is invited to the channel.")
@@ -46,21 +52,20 @@ async def backup_command_callback(command,
                                   logger: Logger):
 
     await ack()
-    print('app', app)
 
     logger.info(command)
 
     user_id = command["user_id"]
-    command_text = command.get('text', '').strip()
-    parts = command_text.split()
-
+    
+    
     channel_id,channel_name, days = None, None , None
 
     try:
-        channel_id,channel_name, days = await validate_backup_history_command(client, parts)
+        channel_id,channel_name, days = await validate_backup_history_command(client,
+                                                                              command.get('text', '').strip())
 
     except ut.ValidationError as e:
-        await say(e.message, channel=user_id, response_type = 'ephemeral')
+        await say(str(e), channel=user_id, response_type = 'ephemeral')
         return
 
     # Send initial response
@@ -70,7 +75,7 @@ async def backup_command_callback(command,
 
     try:
         
-        messages = await get_channel_history(async_slack_app=app,
+        messages = await get_channel_history(client = client,
                                              channel_id=channel_id,
                                              days=days)
 
@@ -83,7 +88,7 @@ async def backup_command_callback(command,
         }
 
         # Upload backup file
-        await app.client.files_upload_v2(
+        await client.files_upload_v2(
             channel=user_id,
             filename=f"backup_{channel_name}.json",
             content=json.dumps(backup_data, indent=2),
@@ -96,6 +101,3 @@ async def backup_command_callback(command,
         logger.error(f"Error in backup: {str(e)}")
         await say(f"Error processing backup: {str(e)}", channel=user_id)
 
-
-def register(app):
-    app.command("/backup")(backup_command_callback)
