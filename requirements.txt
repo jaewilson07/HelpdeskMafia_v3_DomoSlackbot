@@ -7,3 +7,4 @@ slack-sdk
 uvicorn
 requests
 aiohttp
+domolibrary

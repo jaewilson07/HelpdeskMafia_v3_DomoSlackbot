@@ -3,7 +3,8 @@ from logging import Logger
 from slack_sdk import WebClient
 
 
-def app_home_opened_callback(client: WebClient, event: dict, logger: Logger):
+async def app_home_opened_callback(client: WebClient, event: dict,
+                                   logger: Logger):
     # ignore the app_home_opened event for anything but the Home tab
     if event["tab"] != "home":
         return
@@ -11,21 +12,26 @@ def app_home_opened_callback(client: WebClient, event: dict, logger: Logger):
         client.views_publish(
             user_id=event["user"],
             view={
-                "type": "home",
+                "type":
+                "home",
                 "blocks": [
                     {
                         "type": "section",
                         "text": {
-                            "type": "mrkdwn",
-                            "text": "*Welcome home, <@" + event["user"] + "> :house:*",
+                            "type":
+                            "mrkdwn",
+                            "text":
+                            "*Welcome home, <@" + event["user"] + "> :house:*",
                         },
                     },
                     {
                         "type": "section",
                         "text": {
-                            "type": "mrkdwn",
-                            "text": "Learn how home tabs can be more useful and "
-                            + "interactive <https://api.slack.com/surfaces/tabs/using|*in the documentation*>.",
+                            "type":
+                            "mrkdwn",
+                            "text":
+                            "Learn how home tabs can be more useful and " +
+                            "interactive <https://api.slack.com/surfaces/tabs/using|*in the documentation*>.",
                         },
                     },
                 ],
