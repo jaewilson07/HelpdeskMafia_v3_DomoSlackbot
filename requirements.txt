@@ -6,3 +6,4 @@ fastapi
 slack-sdk
 uvicorn
 requests
+aiohttp
