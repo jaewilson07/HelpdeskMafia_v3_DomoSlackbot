@@ -1,3 +1,4 @@
+import time
 from logging import Logger
 from slack_bolt.async_app import AsyncAck, AsyncApp as AsyncSlackApp, AsyncSay,
 
@@ -5,19 +6,33 @@ from slack_bolt.async_app import AsyncAck, AsyncApp as AsyncSlackApp, AsyncSay,
 async def get_channel_history(
     async_slack_app: AsyncSlackApp,
     channel_id,
+    days: int = 7,
     cursor=None,
     messages: list = None,
 ):
     """
     Retrieves channel history from Slack using the conversations.history method.
+    
+    Args:
+        async_slack_app: The Slack app instance
+        channel_id: The channel ID to fetch history from
+        days: Number of days to look back (default: 7)
+        cursor: Pagination cursor
+        messages: List to accumulate messages
     """
     if not messages:
         messages = []
     try:
+        # Calculate timestamps for filtering
+        now = int(time.time())
+        oldest = now - (days * 24 * 60 * 60)  # Convert days to seconds
+        
         result = await async_slack_app.client.conversations_history(
             channel=channel_id,
             limit=100,  # Adjust limit as needed
-            cursor=cursor)
+            cursor=cursor,
+            oldest=oldest,
+            latest=now)
 
         messages.extend(result["messages"])
 
