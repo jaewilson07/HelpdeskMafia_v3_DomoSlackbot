@@ -1,9 +1,6 @@
-import re
 
-from slack_bolt import App
-from .sample_message import sample_message_callback
+from slack_bolt.async_app import AsyncSlackApp
+from .hello_message import hello_message_callback
 
-
-# To receive messages from a channel or dm your app must be a member!
-def register(app: App):
-    app.message(re.compile("(hi|hello|hey)"))(sample_message_callback)
+def register(app: AsyncSlackApp):
+    app.message("hello")(hello_message_callback)

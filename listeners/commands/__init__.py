@@ -1,6 +1,6 @@
-from slack_bolt import App
-from .sample_command import sample_command_callback
 
+from slack_bolt.async_app import AsyncSlackApp
+from .question_command import question_command_callback
 
-def register(app: App):
-    app.command("/sample-command")(sample_command_callback)
+def register(app: AsyncSlackApp):
+    app.command("/question")(question_command_callback)
