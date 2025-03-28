@@ -11,21 +11,34 @@ class ValidationError(Exception):
 
 
 async def get_channel_id_from_name(client,
-                                   channel_name) -> Union[str, None]:
-
+                                 channel_name,
+                                 cursor: str = None) -> Union[str, None]:
+    """Retrieves channel_id from a list of public and private channels recursively"""
     if channel_name.startswith('#'):
         channel_name = channel_name[1:]
-    
-    """retrieves channel_id from a list of public and private channels"""
-    channel_list = await client.conversations_list(
-        types="public_channel,private_channel,mpim,im")
 
-    channel_id =  next((channel['id'] for channel in channel_list.get('channels', [])
-                 if channel['name'] == channel_name), None)
+    try:
+        channel_list = await client.conversations_list(
+            types="public_channel,private_channel,mpim,im",
+            cursor=cursor,
+            limit=100)
 
-    print(channel_name, channel_id, [channel.get('name') for channel in channel_list.get('channels', [])])
-    
-    return channel_id
+        channel_id = next((channel['id'] for channel in channel_list.get('channels', [])
+                        if channel['name'] == channel_name), None)
+
+        if channel_id:
+            return channel_id
+
+        next_cursor = channel_list.get("response_metadata", {}).get("next_cursor")
+        
+        if next_cursor:
+            return await get_channel_id_from_name(client, channel_name, next_cursor)
+
+        return None
+
+    except Exception as e:
+        print(f"Error retrieving channel list: {e}")
+        return None
 
 
 async def get_channel_history(
