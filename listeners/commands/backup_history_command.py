@@ -45,8 +45,8 @@ async def get_channel_id(async_slack_app: AsyncSlackApp, channel_name) -> str:
 
 
 async def backup_command_callback(command, ack: AsyncAck, say: AsyncSay,
-                                  logger: Logger):
-    
+                                  app: AsyncSlackApp, logger: Logger):
+
     await ack()
 
     logger.info(command)
@@ -81,7 +81,7 @@ async def backup_command_callback(command, ack: AsyncAck, say: AsyncSay,
 
     try:
         # Get channel ID
-        channel_id = await get_channel_id(slack_client, channel_name)
+        channel_id = await get_channel_id(app, channel_name)
 
         if not channel_id:
             await say(
@@ -90,7 +90,7 @@ async def backup_command_callback(command, ack: AsyncAck, say: AsyncSay,
             return
 
         # Perform backup
-        backup_data, found_channel_name = await backup_channel_history(
+        backup_data, found_channel_name = await ba(
             channel_id, days)
 
         # Upload backup file
