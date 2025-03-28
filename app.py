@@ -26,6 +26,21 @@ handler = AsyncSlackRequestHandler(async_slack_app)
 async def root():
     return {"message": "Slack Bot API is running"}
 
+@api.get("/auth-test")
+async def auth_test():
+    try:
+        auth_test = await async_slack_app.client.auth_test()
+        auth_info = await async_slack_app.client.auth_info()
+        
+        return {
+            "bot_user_id": auth_test['user_id'],
+            "bot_username": auth_test['user'],
+            "workspace": auth_test['team'],
+            "scopes": auth_info['scope']
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 
 @api.post("/slack/events")
 async def slack_events(request: Request):
