@@ -5,4 +5,4 @@ from .sample_command import sample_command_callback
 
 def register(app: AsyncSlackApp):
     app.command("/question")(question_command_callback)
-    app.command("/sample-command")(sample_command_callback)
+    # app.command("/sample-command")(sample_command_callback)
