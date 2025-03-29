@@ -1,3 +1,4 @@
+
 import os
 import asyncio
 from fastapi import FastAPI
@@ -20,11 +21,21 @@ register_listeners(async_slack_app)
 # Register routes
 api.include_router(init_routes(async_slack_app))
 
-async def main():
+async def start_socket_mode():
     socket_handler = AsyncSocketModeHandler(async_slack_app,
-                                            os.environ["SLACK_APP_TOKEN"])
+                                          os.environ["SLACK_APP_TOKEN"])
     await socket_handler.start_async()
-    uvicorn.run(api, host="0.0.0.0", port=5000)
+
+async def start_http():
+    config = uvicorn.Config(api, host="0.0.0.0", port=3000)
+    server = uvicorn.Server(config)
+    await server.serve()
+
+async def main():
+    await asyncio.gather(
+        start_socket_mode(),
+        start_http()
+    )
 
 if __name__ == "__main__":
     asyncio.run(main())
