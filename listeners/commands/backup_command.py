@@ -54,6 +54,7 @@ async def backup_command_callback(command,
     await ack()
 
     logger.info(command)
+    print(command)
 
     user_id = command["user_id"]
     
@@ -75,7 +76,7 @@ async def backup_command_callback(command,
 
     try:
         
-        messages = await get_channel_history(client = client,
+        messages = await ut.get_channel_history(client = client,
                                              channel_id=channel_id,
                                              days=days)
 
@@ -87,12 +88,14 @@ async def backup_command_callback(command,
             "messages": messages
         }
 
+        print(f"upload {user_id}")
+
         # Upload backup file
         await client.files_upload_v2(
-            channel=user_id,
             filename=f"backup_{channel_name}.json",
-            content=json.dumps(backup_data, indent=2),
             title=f"Channel Backup for #{channel_name}",
+            channel=command['channel_id'],
+            content=json.dumps(backup_data),
             initial_comment=
             f"Here's your backup of #{channel_name} for the last {days} days. Contains {len(messages)} messages."
         )
