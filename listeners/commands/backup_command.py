@@ -5,16 +5,16 @@ from typing import Union, Tuple
 import utils as ut
 
 
-async def validate_backup_history_command(client, command : str) -> Tuple[str, str, int]:
+async def validate_backup_history_command(
+        client, command: str) -> Tuple[str, str, int]:
     """retrieves channel_id and days to extract from comman"""
-    
-    channel_id,channel_name, days = None, None, None
 
+    channel_id, channel_name, days = None, None, None
 
     parts = command.split()
 
     print(command, parts)
-    
+
     # Validate command format
     if len(parts) < 2:
         raise ut.ValidationError(
@@ -36,37 +36,37 @@ async def validate_backup_history_command(client, command : str) -> Tuple[str, s
         raise ut.ValidationError(
             "Invalid command format. Use: /backup #channel_name days")
 
-
     channel_id = await ut.get_channel_id_from_name(client, channel_name)
 
     if not channel_id:
-        raise ut.ValidationError( f"Could not find channel '{channel_name}'. Make sure the bot is invited to the channel.")
-    
+        raise ut.ValidationError(
+            f"Could not find channel '{channel_name}'. Make sure the bot is invited to the channel."
+        )
+
     return channel_id, channel_name, days
 
 
-async def backup_command_callback(command, 
-                                  ack: AsyncAck,
-                                  say: AsyncSay,
-                                  client,
-                                  logger: Logger):
+async def backup_command_callback(command, ack: AsyncAck, say: AsyncSay,
+                                  client, logger: Logger):
 
     await ack()
 
     logger.info(command)
-    print(command)
+    # print(command)
 
     user_id = command["user_id"]
-    
-    
-    channel_id,channel_name, days = None, None , None
+
+    channel_id, channel_name, days = None, None, None
 
     try:
-        channel_id,channel_name, days = await validate_backup_history_command(client,
-                                                                              command.get('text', '').strip())
+        channel_id, channel_name, days = await validate_backup_history_command(
+            client,
+            command.get('text', '').strip())
 
     except ut.ValidationError as e:
-        await say(str(e), channel=user_id, response_type = 'ephemeral')
+        await say(str(e),
+                  channel=command['channel_id'],
+                  response_type='ephemeral')
         return
 
     # Send initial response
@@ -75,10 +75,10 @@ async def backup_command_callback(command,
         channel=user_id)
 
     try:
-        
-        messages = await ut.get_channel_history(client = client,
-                                             channel_id=channel_id,
-                                             days=days)
+
+        messages = await ut.get_channel_history(client=client,
+                                                channel_id=channel_id,
+                                                days=days)
 
         # Prepare backup data
         backup_data = {
@@ -103,4 +103,3 @@ async def backup_command_callback(command,
     except Exception as e:
         logger.error(f"Error in backup: {str(e)}")
         await say(f"Error processing backup: {str(e)}", channel=user_id)
-

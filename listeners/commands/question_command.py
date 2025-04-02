@@ -31,7 +31,7 @@ async def trigger_domo_llms_workflow(question, channel_id, message_id, user_id,
         model_id=domo_model_id,
         version_id=domo_model_version_id,
         execution_parameters=execution_params,
-        debug_api=False)
+        debug_api=True)
 
 
 async def question_command_callback(

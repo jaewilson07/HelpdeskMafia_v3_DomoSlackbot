@@ -1,29 +1,66 @@
-modules = ["python-3.12"]
+modules = ["nodejs-20", "python-3.11"]
 
 [nix]
 channel = "stable-24_05"
 
+[deployment]
+deploymentTarget = "autoscale"
+run = ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
+
 [workflows]
-runButton = "Run"
+runButton = "Run program"
 
 [[workflows.workflow]]
-name = "Run"
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test_crawler"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "test_crawler"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python routes/crawler.py --help"
+
+[[workflows.workflow]]
+name = "Run program"
 author = 40001166
 mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python app.py"
-
-[[ports]]
-localPort = 3000
-externalPort = 80
+args = "python program.py"
 
 [[ports]]
 localPort = 5000
-externalPort = 5000
-
-[deployment]
-run = ["sh", "-c", "python app.py"]
-build = ["sh", "-c", "pip install -r requirements.txt"]
-deploymentTarget = "cloudrun"
+externalPort = 80
