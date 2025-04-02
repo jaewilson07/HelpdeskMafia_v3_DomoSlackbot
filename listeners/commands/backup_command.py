@@ -2,7 +2,7 @@ from logging import Logger
 from slack_bolt.async_app import AsyncAck, AsyncApp as AsyncSlackApp, AsyncSay
 import json
 from typing import Union, Tuple
-import utils as ut
+import utils.slack as utsl
 
 
 async def validate_backup_history_command(
@@ -17,29 +17,29 @@ async def validate_backup_history_command(
 
     # Validate command format
     if len(parts) < 2:
-        raise ut.ValidationError(
+        raise utsl.ValidationError(
             "Invalid command format. Use: /backup #channel_name days")
 
     channel_name = parts[0].lstrip('#')
     try:
         days = int(parts[1])
         if days <= 0 or days > 30:
-            raise ut.ValidationError(
+            raise utsl.ValidationError(
                 "Please specify a number of days between 1 and 30.")
 
     except ValueError:
-        raise ut.ValidationError(
+        raise utsl.ValidationError(
             "Invalid number of days. Please specify a number between 1 and 30."
         )
 
     if not channel_name or not days:
-        raise ut.ValidationError(
+        raise utsl.ValidationError(
             "Invalid command format. Use: /backup #channel_name days")
 
-    channel_id = await ut.get_channel_id_from_name(client, channel_name)
+    channel_id = await utsl.get_channel_id_from_name(client, channel_name)
 
     if not channel_id:
-        raise ut.ValidationError(
+        raise utsl.ValidationError(
             f"Could not find channel '{channel_name}'. Make sure the bot is invited to the channel."
         )
 
@@ -63,7 +63,7 @@ async def backup_command_callback(command, ack: AsyncAck, say: AsyncSay,
             client,
             command.get('text', '').strip())
 
-    except ut.ValidationError as e:
+    except utsl.ValidationError as e:
         await say(str(e),
                   channel=command['channel_id'],
                   response_type='ephemeral')
@@ -76,9 +76,9 @@ async def backup_command_callback(command, ack: AsyncAck, say: AsyncSay,
 
     try:
 
-        messages = await ut.get_channel_history(client=client,
-                                                channel_id=channel_id,
-                                                days=days)
+        messages = await utsl.get_channel_history(client=client,
+                                                  channel_id=channel_id,
+                                                  days=days)
 
         # Prepare backup data
         backup_data = {
