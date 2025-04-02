@@ -17,13 +17,5 @@ async def root():
 
 @router.get("/test-auth")
 async def test_auth(request: Request):
-    try:
-        slack_app = request.app.state.slack_app
-        auth_test = await slack_app.client.auth_test()
-        return {
-            "bot_user_id": auth_test['user_id'],
-            "bot_username": auth_test['user'],
-            "workspace": auth_test['team']
-        }
-    except Exception as e:
-        return {"error": str(e)}
+    slack_app = request.app.state.slack_app
+    return await utils.test_slack_auth(slack_app.client)

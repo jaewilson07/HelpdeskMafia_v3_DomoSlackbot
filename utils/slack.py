@@ -117,6 +117,33 @@ def remove_slack_user_mentions(text):
     Returns:
         str: The text with Slack user mentions removed.
     """
+
+
+async def test_slack_auth(client) -> dict:
+    """
+    Test Slack bot authentication and return auth details
+    Returns dict with auth info or error message
+    """
+    try:
+        auth_test = await client.auth_test()
+        auth_info = await client.auth_info()
+        
+        return {
+            "ok": True,
+            "bot_user_id": auth_test['user_id'],
+            "bot_username": auth_test['user'],
+            "workspace": auth_test['team'],
+            "team_id": auth_test['team_id'], 
+            "enterprise_id": auth_test.get('enterprise_id'),
+            "url": auth_test['url'],
+            "scopes": auth_info['scope']
+        }
+    except Exception as e:
+        return {
+            "ok": False,
+            "error": str(e)
+        }
+
     pattern = r"<@U[A-Z0-9]+>"
 
     cleaned_text = re.sub(pattern, "", text)
