@@ -1,33 +1,17 @@
-import os
-import asyncio
-from fastapi import FastAPI
-import uvicorn
-from slack_bolt.async_app import AsyncApp as AsyncSlackApp
+from src import slack_app, api
 from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
-
-from src.bot.listeners import register_listeners
-from src.routes import init_routes
-
-api = FastAPI()
-
-# Initialize Slack app
-async_slack_app = AsyncSlackApp(
-    token=os.environ.get("SLACK_BOT_TOKEN"), signing_secret=os.environ.get("SLACK_SIGNING_SECRET")
-)
-
-register_listeners(async_slack_app)
-
-# Register routes
-api.include_router(init_routes(async_slack_app))
+import os
+import uvicorn
+import asyncio
 
 
 async def start_socket_mode():
-    socket_handler = AsyncSocketModeHandler(async_slack_app, os.environ["SLACK_APP_TOKEN"])
+    socket_handler = AsyncSocketModeHandler(slack_app, os.environ["SLACK_APP_TOKEN"])
     await socket_handler.start_async()
 
 
 async def start_http():
-    config = uvicorn.Config(api, host="0.0.0.0", port=3000)
+    config = uvicorn.Config(api, host="0.0.0.0", port=5000)
     server = uvicorn.Server(config)
     await server.serve()
 
