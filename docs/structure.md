@@ -34,7 +34,7 @@
 │   ├── __init__.py
 │   ├── base_routes.py
 │   ├── slack_routes.py
-│   └── api/             # API endpoints
+│   └── services/        # Service endpoints
 │       ├── __init__.py
 │       ├── openai.py
 │       └── supabase.py
