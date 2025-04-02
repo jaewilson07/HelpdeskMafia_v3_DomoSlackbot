@@ -1,1 +1,0 @@
-workerweb: npm start
