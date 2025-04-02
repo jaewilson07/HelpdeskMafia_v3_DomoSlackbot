@@ -1,7 +1,6 @@
 from src.routes import init_routes
 from src.listeners import register_listeners
 
-
 import os
 from slack_bolt.async_app import AsyncApp as AsyncSlackApp
 from fastapi import FastAPI
@@ -10,5 +9,9 @@ slack_app = AsyncSlackApp(token=os.environ.get("SLACK_BOT_TOKEN"), signing_secre
 
 register_listeners(slack_app)
 
-api = FastAPI()
-api.include_router(init_routes())
+
+# Initialize `api` lazily to avoid circular import
+def get_api():
+    api = FastAPI()
+    api.include_router(init_routes())
+    return api

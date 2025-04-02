@@ -1,8 +1,9 @@
-import os
-from slack_bolt.async_app import AsyncAck, AsyncSay
-import domolibrary.client.DomoAuth as dmda
+import src.utils.slack as utsl  # Fix import for Slack utilities
+from src.services.domo import domo_auth
+
 import domolibrary.routes.workflows as workflow_routes
-import src.utils.slack as utsl
+from slack_bolt.async_app import AsyncAck, AsyncSay
+import os
 from logging import Logger
 
 
@@ -18,11 +19,6 @@ async def trigger_domo_llms_workflow(question, channel_id, message_id, user_id):
         "user_id": user_id,
         "slack_token": os.environ["SLACK_BOT_TOKEN"],
     }
-
-    domo_auth = dmda.DomoTokenAuth(
-        domo_access_token=os.environ["DOMO_ACCESS_TOKEN"],
-        domo_instance=os.environ["DOMO_INSTANCE"],
-    )
 
     return await workflow_routes.trigger_workflow(
         auth=domo_auth,

@@ -1,8 +1,8 @@
 from logging import Logger
-from slack_bolt.async_app import AsyncAck, AsyncApp as AsyncSlackApp, AsyncSay
+from slack_bolt.async_app import AsyncAck, AsyncApp as AsyncSay
 import json
-from typing import Union, Tuple
-import src.utils.slack as utsl
+from typing import Tuple
+import src.utils.slack as utsl  # Fix import for Slack utilities
 
 
 async def validate_backup_history_command(client, command: str) -> Tuple[str, str, int]:

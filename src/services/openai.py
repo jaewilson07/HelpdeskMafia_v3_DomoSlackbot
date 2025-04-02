@@ -1,19 +1,26 @@
-from fastapi import APIRouter
-from pydantic_ai import OpenAISchema
+"""service for interacting with openai's api"""
 
-# Initialize router
-router = APIRouter(prefix="/ai", tags=["ai"])
+from pydantic_ai import RunContext
 
+import openai
 
-# Define the OpenAI schema using pydantic-ai
-class ChatRequest(OpenAISchema):
-    model: str
-    messages: list
-    temperature: float = 0.7
-    max_tokens: int = 150
+from src.utils.pydantic import generate_pydantic_agent, PydanticAIDependencies, ChatRequest
+
+openai_agent = generate_pydantic_agent()
 
 
-# Create OpenAI route using pydantic-ai
-@router.post("/chat-completion")
-async def chat_completion(request: ChatRequest):
-    return await request.openai_chat_completion()
+@openai_agent.tool
+async def call_chat_completion(
+    ctx: RunContext[PydanticAIDependencies], messages: list, temperature: float = 0.7, max_tokens: int = 150
+):
+    """
+    Calls OpenAI's chat completion API using the openai library.
+    """
+    try:
+        response = await ctx.deps.openai.ChatCompletion.acreate(
+            messages=messages, temperature=temperature, max_tokens=max_tokens
+        )
+        return response
+
+    except openai.error.OpenAIError as e:
+        return {"error": str(e)}

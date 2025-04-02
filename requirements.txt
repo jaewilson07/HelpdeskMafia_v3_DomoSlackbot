@@ -9,3 +9,7 @@ requests
 slack-bolt
 slack-sdk
 uvicorn
+pydantic-ai
+openai 
+httpx  
+python-multipart
