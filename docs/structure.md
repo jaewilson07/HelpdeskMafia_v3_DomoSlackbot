@@ -2,61 +2,85 @@
 # Slack Bot Project Structure
 
 ```
-├── app.py                     # Main application entry point
-├── requirements.txt           # Python dependencies
-├── manifest.json             # Slack app manifest
-├── .env                      # Environment variables (git-ignored)
+├── app.py                    # Main application entry point
+├── requirements.txt          # Python dependencies
+├── manifest.json            # Slack app manifest
+├── .env                     # Environment variables (git-ignored)
 │
-├── listeners/                # Slack event listeners
-│   ├── __init__.py          # Listener registration
-│   ├── commands/            # Slash command handlers
-│   │   ├── __init__.py
-│   │   └── sample_command.py
-│   ├── events/              # Event handlers (mentions, etc)
-│   │   ├── __init__.py
-│   │   └── app_mention.py
-│   └── messages/            # Message handlers
-│       ├── __init__.py
-│       └── message_handler.py
-│
-├── routes/                  # FastAPI routes
-│   ├── __init__.py         # Route registration
-│   ├── base_routes.py      # Core routes (health check, etc)
-│   └── slack_routes.py     # Slack-specific endpoints
-│
-├── templates/              # HTML templates
-│   └── index.html         # Main dashboard
-│
-├── utils/                 # Utility functions
+├── core/                    # Core application setup
 │   ├── __init__.py
-│   └── slack.py          # Slack helper functions
+│   ├── config.py           # Configuration management
+│   └── initialization.py   # App initialization logic
 │
-└── tests/                # Test directory
+├── services/               # Business logic layer
+│   ├── __init__.py
+│   ├── crawler/           # Crawler service
+│   │   ├── __init__.py
+│   │   └── crawler.py
+│   ├── scraper/          # Scraper service
+│   │   ├── __init__.py
+│   │   └── scraper.py
+│   └── client/           # API clients
+│       ├── __init__.py
+│       └── mafia.py
+│
+├── listeners/             # Slack event listeners
+│   ├── __init__.py
+│   ├── commands/         # Slash command handlers
+│   ├── events/           # Event handlers
+│   └── messages/         # Message handlers
+│
+├── routes/               # FastAPI routes
+│   ├── __init__.py
+│   ├── base_routes.py
+│   ├── slack_routes.py
+│   └── api/             # API endpoints
+│       ├── __init__.py
+│       ├── openai.py
+│       └── supabase.py
+│
+├── templates/           # HTML templates
+│   └── index.html
+│
+├── utils/              # Utility functions
+│   ├── __init__.py
+│   ├── slack.py
+│   └── files.py
+│
+└── tests/             # Test directory
     ├── __init__.py
-    ├── test_commands.py
-    └── test_events.py
+    ├── conftest.py    # Test configuration
+    ├── .flake8        # Linting configuration
+    └── listeners/     # Test modules matching main structure
 ```
 
 ## Key Components
 
-### App Entry Point (app.py)
-- Initializes FastAPI and Slack Bolt app
-- Registers routes and listeners
-- Handles socket mode configuration
+### Core
+- Application configuration and initialization
+- Environment setup
+- Core dependencies
+
+### Services
+- Business logic implementation
+- External service integrations
+- API clients and utilities
 
 ### Listeners
-- **commands/**: Slash command handlers
-- **events/**: Event subscriptions (mentions, home tab)
-- **messages/**: Message handlers and filters
+- Command handlers for slash commands
+- Event handlers for mentions and interactions
+- Message handlers for channel communications
 
 ### Routes
-- **base_routes.py**: Core web endpoints
-- **slack_routes.py**: Slack-specific endpoints
+- FastAPI endpoint definitions
+- API integrations (OpenAI, Supabase)
+- Web interface routes
 
 ### Templates
 - HTML templates for web interface
 - Dashboard and configuration pages
 
 ### Utils
-- Helper functions and utilities
-- Slack API wrappers
+- Helper functions
+- Common utilities
+- File handling
