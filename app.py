@@ -27,7 +27,7 @@ async def start_socket_mode():
     await socket_handler.start_async()
 
 async def start_http():
-    config = uvicorn.Config(api, host="0.0.0.0", port=3000)
+    config = uvicorn.Config(api, host="0.0.0.0", port=5000)
     server = uvicorn.Server(config)
     await server.serve()
 
