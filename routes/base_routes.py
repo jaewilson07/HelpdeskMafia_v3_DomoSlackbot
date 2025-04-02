@@ -18,6 +18,7 @@ async def root():
 async def test_auth():
     try:
         auth_test = await slack_app.client.auth_test()
+
         return {
             "bot_user_id": auth_test['user_id'],
             "bot_username": auth_test['user'],
