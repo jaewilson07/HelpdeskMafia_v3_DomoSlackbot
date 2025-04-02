@@ -18,7 +18,11 @@ def init_slack_routes(slack_app: AsyncApp):
                 "bot_user_id": auth_test['user_id'],
                 "bot_username": auth_test['user'],
                 "workspace": auth_test['team'],
-                "scopes": auth_info['scope']
+                "team_id": auth_test['team_id'],
+                "enterprise_id": auth_test.get('enterprise_id'),
+                "url": auth_test['url'],
+                "scopes": auth_info['scope'],
+                "token_type": auth_info['token_type']
             }
         except Exception as e:
             return {"error": str(e)}
