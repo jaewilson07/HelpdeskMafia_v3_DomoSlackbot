@@ -1,13 +1,12 @@
 import os
-from slack_bolt.async_app import AsyncAck, AsyncRespond, AsyncSay
+from slack_bolt.async_app import AsyncAck, AsyncSay
 import domolibrary.client.DomoAuth as dmda
 import domolibrary.routes.workflows as workflow_routes
-import utils
+import src.utils.slack as utsl
 from logging import Logger
 
 
-async def trigger_domo_llms_workflow(question, channel_id, message_id, user_id,
-                                     token: str):
+async def trigger_domo_llms_workflow(question, channel_id, message_id, user_id):
     domo_starting_block = "Start HelpDeskMafia"
     domo_model_id = "48707704-213c-4c82-8a7d-69505b50a8de"
     domo_model_version_id = "1.0.9"
@@ -17,7 +16,7 @@ async def trigger_domo_llms_workflow(question, channel_id, message_id, user_id,
         "channel_id": channel_id,
         "message_id": message_id,
         "user_id": user_id,
-        "slack_token": os.environ['SLACK_BOT_TOKEN'],
+        "slack_token": os.environ["SLACK_BOT_TOKEN"],
     }
 
     domo_auth = dmda.DomoTokenAuth(
@@ -31,7 +30,8 @@ async def trigger_domo_llms_workflow(question, channel_id, message_id, user_id,
         model_id=domo_model_id,
         version_id=domo_model_version_id,
         execution_parameters=execution_params,
-        debug_api=False)
+        debug_api=False,
+    )
 
 
 async def question_command_callback(
@@ -46,7 +46,7 @@ async def question_command_callback(
 
     user_id = command["user_id"]
     channel_id = command["channel_id"]
-    clean_question = utils.remove_slack_user_mentions(command["text"])
+    clean_question = utsl.remove_slack_user_mentions(command["text"])
     # response_url = body["response_url"]
 
     said = await say(
@@ -54,8 +54,6 @@ async def question_command_callback(
         # channel=channel_id
     )
 
-    await trigger_domo_llms_workflow(question=clean_question,
-                                     channel_id=channel_id,
-                                     message_id=said['ts'],
-                                     user_id=user_id,
-                                     token=command['token'])
+    await trigger_domo_llms_workflow(
+        question=clean_question, channel_id=channel_id, message_id=said["ts"], user_id=user_id, token=command["token"]
+    )

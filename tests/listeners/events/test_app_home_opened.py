@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from slack_sdk import WebClient
 
-from listeners.events.app_home_opened import app_home_opened_callback
+from src.bot.listeners.events.app_home_opened import app_home_opened_callback
 
 test_logger = logging.getLogger(__name__)
 

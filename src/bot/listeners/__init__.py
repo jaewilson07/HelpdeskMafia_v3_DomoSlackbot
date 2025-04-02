@@ -1,9 +1,9 @@
 # from listeners import actions
 # from listeners import shortcuts
 # from listeners import views
-from listeners import commands
-from listeners import events
-from listeners import messages
+from src.bot.listeners import commands
+from src.bot.listeners import events
+from src.bot.listeners import messages
 
 
 def register_listeners(app):

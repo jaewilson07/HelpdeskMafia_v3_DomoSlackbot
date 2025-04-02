@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from slack_bolt import BoltContext, Say
 
-from listeners.messages.sample_message import sample_message_callback
+from src.bot.listeners.messages.sample_message import sample_message_callback
 
 
 test_logger = logging.getLogger(__name__)

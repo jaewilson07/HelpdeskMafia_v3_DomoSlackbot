@@ -1,7 +1,7 @@
-
 from fastapi import APIRouter
-from .slack_routes import init_slack_routes
-from .base_routes import router as base_router
+from .slack import init_slack_routes
+from .base import router as base_router
+
 
 def init_routes(slack_app):
     api_router = APIRouter()
