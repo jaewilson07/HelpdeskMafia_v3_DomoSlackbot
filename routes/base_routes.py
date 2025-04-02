@@ -15,10 +15,10 @@ async def root():
     return HTMLResponse(content=get_template("index.html"), status_code=200)
 
 @router.get("/test-auth")
-async def test_auth():
+async def test_auth(request):
     try:
+        slack_app = request.app.state.slack_app
         auth_test = await slack_app.client.auth_test()
-
         return {
             "bot_user_id": auth_test['user_id'],
             "bot_username": auth_test['user'],

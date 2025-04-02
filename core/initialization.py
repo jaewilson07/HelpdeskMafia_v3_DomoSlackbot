@@ -12,5 +12,6 @@ def init_fastapi() -> FastAPI:
 def register_all_routes(app: FastAPI, slack_app: AsyncSlackApp):
     from routes import base_routes, slack_routes
     
+    app.state.slack_app = slack_app
     app.include_router(base_routes.router)
     app.include_router(slack_routes.router)
