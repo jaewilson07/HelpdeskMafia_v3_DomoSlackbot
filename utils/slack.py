@@ -129,8 +129,7 @@ async def test_slack_auth(client) -> dict:
     """
     try:
         auth_test = await client.auth_test()
-        auth_info = await client.auth_info()
-
+        
         return {
             "ok": True,
             "bot_user_id": auth_test['user_id'],
@@ -138,8 +137,7 @@ async def test_slack_auth(client) -> dict:
             "workspace": auth_test['team'],
             "team_id": auth_test['team_id'],
             "enterprise_id": auth_test.get('enterprise_id'),
-            "url": auth_test['url'],
-            "scopes": auth_info['scope']
+            "url": auth_test['url']
         }
 
     except Exception as e:
