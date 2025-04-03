@@ -1,0 +1,15 @@
+# Slack App Tokens
+SLACK_BOT_TOKEN=your-slack-bot-token
+SLACK_APP_TOKEN=your-slack-app-token
+SLACK_SIGNING_SECRET=your-slack-signing-secret
+
+# OpenAI API
+OPENAI_API_KEY=your-openai-api-key
+OPENAI_MODEL=your-openai-model-name
+
+# Domo API
+DOMO_ACCESS_TOKEN=your-domo-access-token
+DOMO_INSTANCE=your-domo-instance
+
+# Other configurations
+# Add any additional environment variables here
