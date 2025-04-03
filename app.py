@@ -4,9 +4,10 @@ import uvicorn
 import asyncio
 from dotenv import load_dotenv
 
-assert load_dotenv()
+assert load_dotenv(override=True)
 
-from src import slack_app, get_api  
+from src import slack_app, get_api
+
 
 async def start_socket_mode():
     socket_handler = AsyncSocketModeHandler(slack_app, os.environ["SLACK_APP_TOKEN"])

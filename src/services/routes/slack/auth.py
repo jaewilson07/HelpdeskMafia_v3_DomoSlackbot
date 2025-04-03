@@ -1,8 +1,11 @@
-async def validate_bot_auth():
-    from src import slack_app
+async def validate_bot_auth(client=None):
+    if not client:
+        from src import slack_app
+
+        client = slack_app.client
 
     try:
-        auth_test = await slack_app.client.auth_test()
+        auth_test = await client.auth_test()
 
         return {
             "bot_user_id": auth_test["user_id"],

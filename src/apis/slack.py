@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.services.slack import validate_bot_auth
+from services.routes.slack.auth import validate_bot_auth
 
 router = APIRouter(prefix="/slack", tags=["slack"])
 

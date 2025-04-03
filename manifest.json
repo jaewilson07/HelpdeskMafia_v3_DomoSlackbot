@@ -1,18 +1,18 @@
 {
     "display_information": {
-        "name": "HelpdeskMafia_v3",
+        "name": "HelpdeskMafia_v4",
         "description": "snipes questions you would have asked support",
         "background_color": "#de09de"
     },
     "features": {
         "app_home": {
-            "home_tab_enabled": true,
+            "home_tab_enabled": false,
             "messages_tab_enabled": true,
             "messages_tab_read_only_enabled": false
         },
         "bot_user": {
-            "display_name": "HelpdeskMafia_v3",
-            "always_online": false
+            "display_name": "HelpdeskMafia_v4",
+            "always_online": true
         },
         "shortcuts": [
             {
@@ -32,6 +32,12 @@
                 "command": "/backup",
                 "description": "backs up a channel's history",
                 "usage_hint": "#channel_id num_days",
+                "should_escape": false
+            },
+            {
+                "command": "/upsert-canvas",
+                "description": "Upserts a channel's canvas with 'Hello World'",
+                "usage_hint": "channel_name canvas_name",
                 "should_escape": false
             }
         ]

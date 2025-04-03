@@ -1,4 +1,4 @@
-import src.utils.slack as utsl  # Fix import for Slack utilities
+from src.utils.slack import remove_slack_user_mentions  # Fix import for Slack utilities
 from src.services.domo import domo_auth
 
 import domolibrary.routes.workflows as workflow_routes
@@ -42,7 +42,7 @@ async def question_command_callback(
 
     user_id = command["user_id"]
     channel_id = command["channel_id"]
-    clean_question = utsl.remove_slack_user_mentions(command["text"])
+    clean_question = remove_slack_user_mentions(command["text"])
     # response_url = body["response_url"]
 
     said = await say(
@@ -50,6 +50,4 @@ async def question_command_callback(
         # channel=channel_id
     )
 
-    await trigger_domo_llms_workflow(
-        question=clean_question, channel_id=channel_id, message_id=said["ts"], user_id=user_id, token=command["token"]
-    )
+    await trigger_domo_llms_workflow(question=clean_question, channel_id=channel_id, message_id=said["ts"], user_id=user_id)

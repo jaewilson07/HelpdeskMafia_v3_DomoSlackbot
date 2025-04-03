@@ -1,6 +1,5 @@
 from logging import Logger
 
-from slack_bolt.async_app import AsyncApp
 
 async def app_home_opened_callback(client, event: dict, logger: Logger):
     # ignore the app_home_opened event for anything but the Home tab
