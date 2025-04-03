@@ -1,3 +1,8 @@
+"""
+This module provides functions for managing Slack canvases, including retrieving,
+creating, updating, and appending content to canvases.
+"""
+
 from typing import List
 import json
 
@@ -10,10 +15,10 @@ async def get_channel_canvases(client, channel_id: str) -> List[dict]:
 
     Args:
         client: The Slack client instance.
-        channel_id: The ID of the Slack channel.
+        channel_id (str): The ID of the Slack channel.
 
     Returns:
-        A list of canvases (if available) or an empty list.
+        List[dict]: A list of canvases or an empty list if none are found.
     """
     try:
         # Fetch channel information
@@ -48,21 +53,29 @@ async def get_channel_canvases(client, channel_id: str) -> List[dict]:
 
 
 async def search_canvas_id_by_name(client, channel_id):
+    """
+    Searches for a canvas by name in a given Slack channel.
+
+    Args:
+        client: The Slack client instance.
+        channel_id: The ID of the Slack channel.
+
+    Returns:
+        dict: The canvas object if found, otherwise None.
+    """
     canvases = await get_channel_canvases(client=client, channel_id=channel_id)
     return next((canvas for canvas in canvases if canvas.get("name") == channel_id))
 
 
-async def create_canvas(
-    client, channel_id: str, document_md: str, title: str  # document body as markdown  # canvas title
-) -> dict:
+async def create_canvas(client, channel_id: str, document_md: str, title: str) -> dict:
     """
     Creates a new canvas in a Slack channel.
 
     Args:
         client: The Slack client instance.
-        channel_id: The ID of the Slack channel.
-        document_md: The content of the canvas document.
-        title: The title of the canvas.
+        channel_id (str): The ID of the Slack channel.
+        document_md (str): The content of the canvas in markdown format.
+        title (str): The title of the canvas.
 
     Returns:
         dict: The response from the Slack API.
@@ -86,8 +99,8 @@ async def update_canvas(client, canvas_id: str, changes: List[dict]) -> dict:
 
     Args:
         client: The Slack client instance.
-        canvas_id: The ID of the canvas to update.
-        changes: A list of changes to apply to the canvas.
+        canvas_id (str): The ID of the canvas to update.
+        changes (List[dict]): A list of changes to apply to the canvas.
 
     Returns:
         dict: The response from the Slack API.
@@ -106,6 +119,14 @@ async def update_canvas(client, canvas_id: str, changes: List[dict]) -> dict:
 async def append_to_canvas(client, canvas_id: str, markdown_text: str) -> dict:
     """
     Appends new markdown content to the end of the canvas.
+
+    Args:
+        client: The Slack client instance.
+        canvas_id (str): The ID of the canvas to update.
+        markdown_text (str): The markdown content to append.
+
+    Returns:
+        dict: The response from the Slack API.
     """
     changes = [
         {
@@ -121,7 +142,16 @@ async def append_to_canvas(client, canvas_id: str, markdown_text: str) -> dict:
 
 async def replace_canvas_content(client, canvas_id: str, markdown_text: str, section_id: str = None) -> dict:
     """
-    Replaces entire canvas or a specific section with new markdown content.
+    Replaces the entire canvas or a specific section with new markdown content.
+
+    Args:
+        client: The Slack client instance.
+        canvas_id (str): The ID of the canvas to update.
+        markdown_text (str): The new markdown content.
+        section_id (str, optional): The ID of the section to replace. Defaults to None.
+
+    Returns:
+        dict: The response from the Slack API.
     """
     if section_id:
         changes = [
@@ -150,7 +180,16 @@ async def replace_canvas_content(client, canvas_id: str, markdown_text: str, sec
 async def upsert_canvas(client, channel_id: str, title: str, document_md: str, is_append_if_exists: bool = False) -> dict:
     """
     Creates a new canvas if not found, or updates an existing one.
-    If is_append_if_exists is True, appends content; otherwise replaces it.
+
+    Args:
+        client: The Slack client instance.
+        channel_id (str): The ID of the Slack channel.
+        title (str): The title of the canvas.
+        document_md (str): The content of the canvas in markdown format.
+        is_append_if_exists (bool, optional): Whether to append content if the canvas exists. Defaults to False.
+
+    Returns:
+        dict: The response from the Slack API.
     """
     canvases = await get_channel_canvases(client, channel_id)
     found_canvas = next((c for c in canvases if c.get("title") == title), None)
@@ -167,8 +206,15 @@ async def upsert_canvas(client, channel_id: str, title: str, document_md: str, i
 async def update_canvas_title(client, canvas_id: str, new_title: str) -> dict:
     """
     Updates the title of an existing canvas in Slack.
-    """
 
+    Args:
+        client: The Slack client instance.
+        canvas_id (str): The ID of the canvas to update.
+        new_title (str): The new title for the canvas.
+
+    Returns:
+        dict: The response from the Slack API.
+    """
     return await update_canvas(
         client=client,
         canvas_id=canvas_id,

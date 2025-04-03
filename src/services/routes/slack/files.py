@@ -1,3 +1,8 @@
+"""
+This module provides functions for managing Slack files, including retrieving
+a list of canvases using the Slack API.
+"""
+
 from slack_bolt.async_app import AsyncApp as AsyncSlackApp
 from typing import List
 import logging
@@ -7,7 +12,15 @@ logger = logging.getLogger(__name__)
 
 async def get_files(client: AsyncSlackApp = None, canvas_list: List[dict] = None, cursor=None):
     """
-    Recursively fetches canvases using Slack's files.list method.
+    Recursively fetches Slack canvases using the `files.list` API method.
+
+    Args:
+        client (AsyncSlackApp): The Slack client instance for making API calls.
+        canvas_list (List[dict], optional): A list to accumulate canvases. Defaults to None.
+        cursor (str, optional): The pagination cursor for fetching the next page. Defaults to None.
+
+    Returns:
+        List[dict]: A list of canvases retrieved from Slack.
     """
 
     if not canvas_list:

@@ -1,8 +1,12 @@
+"""
+This module provides functions for managing Slack channels, including retrieving
+channel lists, searching for channels by name, and fetching channel history.
+"""
+
 from . import SlackError
 import time
 from typing import List, Union
 from slack_bolt.async_app import AsyncApp as AsyncSlackApp
-
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,9 +17,19 @@ async def get_channels(
     channel_types="public_channel,private_channel,mpim,im",
     channel_list: List[dict] = None,
     cursor: str = None,
-) -> List[dict]:  # Corrected return type
-    """recursive function for retrieving channels"""
+) -> List[dict]:
+    """
+    Recursively retrieves a list of Slack channels.
 
+    Args:
+        client (AsyncSlackApp): The Slack client instance.
+        channel_types (str): Comma-separated types of channels to retrieve.
+        channel_list (List[dict], optional): A list to accumulate channels. Defaults to None.
+        cursor (str, optional): The pagination cursor for fetching the next page. Defaults to None.
+
+    Returns:
+        List[dict]: A list of channels retrieved from Slack.
+    """
     if client is None:
         from app import slack_app
 
@@ -40,8 +54,17 @@ async def get_channels(
 
 
 async def search_channel_by_name(client, channel_name, cursor: str = None) -> Union[str, None]:
-    """Retrieves channel_id from a list of public and private channels recursively"""
+    """
+    Searches for a channel by name and retrieves its ID.
 
+    Args:
+        client: The Slack client instance.
+        channel_name (str): The name of the channel to search for.
+        cursor (str, optional): The pagination cursor for fetching the next page. Defaults to None.
+
+    Returns:
+        Union[str, None]: The channel ID if found, otherwise None.
+    """
     if channel_name.startswith("#"):
         channel_name = channel_name[1:]
 
@@ -50,23 +73,19 @@ async def search_channel_by_name(client, channel_name, cursor: str = None) -> Un
     return next((channel["id"] for channel in channel_list if channel["name"] == channel_name), None)
 
 
-async def get_channel_history(
-    client,
-    channel_id: str,
-    days: int = 7,
-    cursor=None,
-    messages: list = None,
-) -> List[dict]:
+async def get_channel_history(client, channel_id: str, days: int = 7, cursor=None, messages: list = None) -> List[dict]:
     """
-    Retrieves channel history from Slack using the conversations.history method,
-    including threaded replies.
+    Retrieves the message history of a Slack channel, including threaded replies.
 
     Args:
-        client: async client
-        channel_id: The channel ID to fetch history from
-        days: Number of days to look back (default: 7)
-        cursor: Pagination cursor
-        messages: List to accumulate messages
+        client: The Slack client instance.
+        channel_id (str): The ID of the Slack channel.
+        days (int, optional): Number of days to look back. Defaults to 7.
+        cursor: Pagination cursor. Defaults to None.
+        messages (list, optional): A list to accumulate messages. Defaults to None.
+
+    Returns:
+        List[dict]: A list of messages retrieved from the channel.
     """
     if not messages:
         messages = []

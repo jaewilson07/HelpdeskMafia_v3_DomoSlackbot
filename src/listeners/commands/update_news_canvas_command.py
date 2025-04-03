@@ -10,6 +10,20 @@ import datetime as dt
 
 
 async def validate_update_news_canvas_command(client, command_text: str, canvas_title: str) -> Tuple[str, str]:
+    """
+    Validates the `/update-news-canvas` command and retrieves the channel and canvas details.
+
+    Args:
+        client: The Slack client instance.
+        command_text (str): The text of the command entered by the user.
+        canvas_title (str): The title of the canvas to validate.
+
+    Returns:
+        Tuple[str, str]: The channel ID and channel name.
+
+    Raises:
+        ValueError: If the command format is invalid or the channel is not found.
+    """
     parts = command_text.split()
 
     if len(parts) < 1:
@@ -36,8 +50,15 @@ async def validate_update_news_canvas_command(client, command_text: str, canvas_
 
 async def update_news_canvas_command_callback(command, ack: AsyncAck, say, respond, client, logger: Logger):
     """
-    Expects the format: /update-news-canvas <channel_name>
-    Summarizes the last 5 days of messages and upserts the summary into the 'news' canvas.
+    Handles the `/update-news-canvas` command to summarize messages and update the 'news' canvas.
+
+    Args:
+        command: The Slack command payload.
+        ack (AsyncAck): Acknowledges the command request.
+        say: Sends a message to the Slack channel.
+        respond: Sends a response to the user.
+        client: The Slack client instance.
+        logger (Logger): Logger instance for logging errors and information.
     """
     await ack()
 

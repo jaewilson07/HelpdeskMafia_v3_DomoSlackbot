@@ -1,3 +1,10 @@
+"""
+This module integrates with OpenAI's API to provide tools for summarizing
+chat messages and generating AI-powered responses.
+
+It uses the `pydantic-ai` library to simplify schema-based AI interactions.
+"""
+
 from utils.pydantic_agent_generator import (
     generate_pydantic_agent,
     PydanticAIDependencies,
@@ -22,11 +29,11 @@ async def call_chat_completion(ctx: RunContext[PydanticAIDependencies], messages
     Calls OpenAI's chat completion API and returns a response.
 
     Args:
-        ctx: The RunContext holding dependencies, including an openai client.
-        messages: A list of message dicts containing 'role' and 'content'.
+        ctx (RunContext[PydanticAIDependencies]): The context holding dependencies, including an OpenAI client.
+        messages (List[dict]): A list of message dictionaries containing 'role' and 'content'.
 
     Returns:
-        A dict with OpenAI's chat completion response or an error string if it fails.
+        dict: A response from OpenAI's chat completion API or an error message.
     """
     try:
         response = await ctx.deps.openai.chat.completions.create(messages=messages)
@@ -42,14 +49,14 @@ async def summarize_text(
     messages: list,
 ):
     """
-    Summarizes chat messages using OpenAI's completion endpoint. ctx.
+    Summarizes chat messages using OpenAI's completion endpoint.
 
     Args:
-        ctx: The RunContext holding dependencies for interacting with OpenAI.
-        messages: A list of dicts representing individual chat messages to summarize.
+        ctx (RunContext[PydanticAIDependencies]): The context holding dependencies for interacting with OpenAI.
+        messages (list): A list of dictionaries representing individual chat messages to summarize.
 
     Returns:
-        A dict containing the summarized text or an error message if a failure occurs.
+        dict: A response containing the summarized text or an error message.
     """
 
     system_prompt = """You are a helpful assistant that summarizes chat histories.  Format the response as in slack-compatible markdown format.
@@ -89,7 +96,15 @@ async def summarize_text(
 
 
 def format_message(messages: List[dict]) -> List[dict]:
-    """maps over messages and only keeps fields of interest."""
+    """
+    Maps over messages and retains only fields of interest.
+
+    Args:
+        messages (List[dict]): A list of message dictionaries.
+
+    Returns:
+        List[dict]: A list of formatted message dictionaries.
+    """
     return [
         {
             "user_id": msg.get("user_id") or msg.get("user"),  # Fallback to 'user' if 'user_id' is not present
@@ -116,12 +131,10 @@ async def summarize_chat_messages(
     Summarizes chat messages using OpenAI's chat completion API.
 
     Args:
-        messages: A list of message dicts to summarize.
-        agent_deps: Dependencies for the OpenAI agent.
-        openai_model: The model to use for summarization.
+        messages (List[dict]): A list of message dictionaries to summarize.
 
     Returns:
-        The summarized text or an error message.
+        str: The summarized text or an error message.
     """
     if not messages:
         return "No messages to summarize."
