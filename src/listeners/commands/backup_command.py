@@ -1,15 +1,13 @@
 from src.utils.ValidationError import ValidationError
 import src.services.routes.slack.channel as slack_routes  # Fix import for Slack utilities
-from utils.pydantic_agent_generator import generate_agent_dependencies, generate_model, generate_pydantic_agent
 
 from slack_bolt.async_app import AsyncAck, AsyncSay
 import logging
 import json
-from typing import Tuple, List
+from typing import Tuple
 
-openai_agent = generate_pydantic_agent()
-agent_deps = generate_agent_dependencies()
-openai_model = generate_model()
+from src.services.openai_agent import summarize_chat_messages
+
 
 logger = logging.getLogger(__name__)
 
@@ -36,25 +34,12 @@ async def validate_backup_history_command(client, command: str) -> Tuple[str, st
     if not channel_name or not days:
         raise ValidationError("Invalid command format. Use: /backup #channel_name days")
 
-    channel_id = await slack_routes.search_channel_id_by_name(client, channel_name)
+    channel_id = await slack_routes.search_channel_by_name(client, channel_name)
 
     if not channel_id:
         raise ValidationError(f"Could not find channel '{channel_name}'. Make sure the bot is invited to the channel.")
 
     return channel_id, channel_name, days
-
-
-def format_message(messages: List[dict]) -> List[dict]:
-    """maps over messages and only keeps fields of interest."""
-    return [
-        {
-            "user_id": msg.get("user_id") or msg.get("user"),  # Fallback to 'user' if 'user_id' is not present
-            "user_name": msg.get("user_name") or msg.get("username"),  # Fallback to 'username' if 'user_name' is not present
-            "text": msg.get("text").strip(),
-            "timestamp": msg.get("ts"),
-        }
-        for msg in messages
-    ]
 
 
 async def backup_command_callback(command, ack: AsyncAck, respond, say: AsyncSay, client):
@@ -103,8 +88,9 @@ async def backup_command_callback(command, ack: AsyncAck, respond, say: AsyncSay
         )
 
         # Generate chat summary
-        user_prompt = f"Summarize the following chat messages: {json.dumps(format_message(messages))}"
-        response = await openai_agent.run(user_prompt=user_prompt, deps=agent_deps, model=openai_model)
+        response = await summarize_chat_messages(
+            messages=messages,
+        )
 
         channel_hyperlink = f"<#{channel_id}|{channel_name}>"
 
@@ -116,5 +102,6 @@ async def backup_command_callback(command, ack: AsyncAck, respond, say: AsyncSay
         )
 
     except Exception as e:
-        logger.error(f"Error in backup: {str(e)}")
-        await respond(f"Error processing backup: {str(e)}", channel=user_id, channel_id=user_id, response_type="ephemeral")
+        message = f"Error in backup: {str(e)}"
+        logger.error(message)
+        await respond(message, channel=user_id, channel_id=user_id, response_type="ephemeral")

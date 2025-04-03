@@ -1,4 +1,9 @@
-from utils.pydantic_agent_generator import generate_pydantic_agent, PydanticAIDependencies
+from utils.pydantic_agent_generator import (
+    generate_pydantic_agent,
+    PydanticAIDependencies,
+    generate_agent_dependencies,
+    generate_model,
+)
 
 from pydantic_ai import RunContext
 
@@ -81,3 +86,47 @@ async def summarize_text(
     except OpenAIError as e:
         logger.error("OpenAI API error: %s", e)
         return {"error": str(e)}
+
+
+def format_message(messages: List[dict]) -> List[dict]:
+    """maps over messages and only keeps fields of interest."""
+    return [
+        {
+            "user_id": msg.get("user_id") or msg.get("user"),  # Fallback to 'user' if 'user_id' is not present
+            "user_name": msg.get("user_name") or msg.get("username"),  # Fallback to 'username' if 'user_name' is not present
+            "text": msg.get("text").strip(),
+            "timestamp": msg.get("ts"),
+        }
+        for msg in messages
+    ]
+
+
+openai_agent = generate_pydantic_agent(
+    system_prompt="""you are a senior executive assistant who excels at summarizing chat conversations"""
+)
+
+agent_deps = generate_agent_dependencies()
+openai_model = generate_model()
+
+
+async def summarize_chat_messages(
+    messages: List[dict],
+):
+    """
+    Summarizes chat messages using OpenAI's chat completion API.
+
+    Args:
+        messages: A list of message dicts to summarize.
+        agent_deps: Dependencies for the OpenAI agent.
+        openai_model: The model to use for summarization.
+
+    Returns:
+        The summarized text or an error message.
+    """
+    if not messages:
+        return "No messages to summarize."
+
+    # Generate summary using OpenAI
+    user_prompt = f"Summarize the following chat messages: {json.dumps(format_message(messages))}"
+
+    return await openai_agent.run(user_prompt=user_prompt, deps=agent_deps, model=openai_model)

@@ -22,7 +22,6 @@ def generate_model(model_name: str = openai_model_name, provider="openai") -> Op
     return OpenAIModel(
         model_name=model_name,
         provider=provider,
-        api_key=openai_api_key,  # Add the missing api_key parameter
     )
 
 

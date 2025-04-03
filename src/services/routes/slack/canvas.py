@@ -1,4 +1,7 @@
 from typing import List
+import json
+
+from .files import get_files
 
 
 async def get_channel_canvases(client, channel_id: str) -> List[dict]:
@@ -18,8 +21,26 @@ async def get_channel_canvases(client, channel_id: str) -> List[dict]:
         channel_info = response.get("channel", {})
 
         # Extract canvases if available
-        canvases = channel_info.get("canvases", [])
-        return canvases
+        canvases = [obj for obj in channel_info.get("properties", {}).get("tabs", []) if obj.get("type") == "canvas"]
+
+        if not canvases:
+            return []
+
+        files = await get_files(client=client)
+
+        result = []
+
+        for canvas in canvases:
+
+            result.append(canvas)
+
+            fi = next((fi for fi in files if canvas.get("data", {}).get("file_id", None) == fi.get("id")), None)
+            if not fi:
+                continue
+
+            canvas.get("data").update(fi)
+
+        return result
 
     except Exception as e:
         print(f"Error retrieving canvases for channel {channel_id}: {e}")
@@ -141,3 +162,22 @@ async def upsert_canvas(client, channel_id: str, title: str, document_md: str, i
             return await append_to_canvas(client, found_canvas["id"], document_md)
         else:
             return await replace_canvas_content(client, found_canvas["id"], document_md)
+
+
+async def update_canvas_title(client, canvas_id: str, new_title: str) -> dict:
+    """
+    Updates the title of an existing canvas in Slack.
+    """
+
+    return await update_canvas(
+        client=client,
+        canvas_id=canvas_id,
+        changes=json.dumps(
+            [
+                {
+                    "operation": "document_metadata_update",
+                    "title": new_title,
+                }
+            ]
+        ),
+    )

@@ -29,26 +29,29 @@ async def validate_update_canvas_command(client, command_text: str) -> Tuple[str
     return channel_id, channel_name, canvas_name
 
 
-async def upsert_canvas_command_callback(command, ack: AsyncAck, respond: AsyncRespond, client, logger: Logger):
+async def upsert_canvas_command_callback(command, ack: AsyncAck, say, respond: AsyncRespond, client, logger: Logger):
     """
     Expects the format: /upsert-canvas <channel_name> <canvas_name>
     Upserts the canvas by name with "Hello World".
     """
     await ack()
     channel_id = command.get("channel")
+    target_channel_id, target_channel_name, canvas_name = None, None, None
     try:
-        try:
-            channel_id, channel_name, canvas_name = await validate_update_canvas_command(
-                client, command.get("text", "").strip()
-            )
-        except ValueError as e:
-            logger.error(f"Validation error: {e}")
-            await respond(str(e), response_type="ephemeral", channel=channel_id)
+        target_channel_id, target_channel_name, canvas_name = await validate_update_canvas_command(
+            client, command.get("text", "").strip()
+        )
+    except ValueError as e:
+        logger.error(f"Validation error: {e}")
+        return await respond(str(e), response_type="ephemeral")
 
-        await upsert_canvas(client=client, channel_id=channel_id, title=canvas_name, document_md="Hello World")
-        logger.info(f"Canvas '{canvas_name}' successfully upserted in channel '{channel_name}'.")
-        return await respond(f"Canvas '{canvas_name}' upserted in channel '{channel_name}'.")
+    try:
+        await upsert_canvas(client=client, channel_id=target_channel_id, title=canvas_name, document_md="Hello World")
+
+        logger.info(f"Canvas '{canvas_name}' successfully upserted in channel '{target_channel_name}'.")
+        channel_link = f"<#{target_channel_id}|{target_channel_name}>"
+        return await say(f"Canvas '{canvas_name}' upserted in channel {channel_link}.")
 
     except Exception as e:
         logger.error(f"Error updating canvas: {e}")
-        await respond(f"Failed to update the canvas: {str(e)}")
+        await respond(f"Failed to update the canvas: {str(e)}", response_type="ephemeral")

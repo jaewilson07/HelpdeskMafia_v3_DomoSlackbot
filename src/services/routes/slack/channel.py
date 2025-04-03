@@ -39,7 +39,7 @@ async def get_channels(
     return channel_list
 
 
-async def search_channel_id_by_name(client, channel_name, cursor: str = None) -> Union[str, None]:
+async def search_channel_by_name(client, channel_name, cursor: str = None) -> Union[str, None]:
     """Retrieves channel_id from a list of public and private channels recursively"""
 
     if channel_name.startswith("#"):
