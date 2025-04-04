@@ -13,3 +13,4 @@ pydantic-ai
 openai 
 httpx  
 python-multipart
+mem0ai

@@ -15,7 +15,8 @@ dependencies = [
     "openai>=1.67.0",
     "httpx>=0.24",
     "pydantic-ai>=0.0.49",
-    "python-multipart"
+    "python-multipart",
+    "mem0ai"
 ]
 
 [tool.black]

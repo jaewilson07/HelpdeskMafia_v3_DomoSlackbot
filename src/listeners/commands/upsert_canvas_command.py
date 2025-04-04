@@ -1,7 +1,7 @@
 from slack_bolt.async_app import AsyncAck, AsyncRespond
 from logging import Logger
 from typing import Tuple
-from src.services.routes.slack.channel import search_channel_by_name
+from src.services.routes.slack.channel import search_channel_id_by_name
 from src.services.routes.slack.canvas import upsert_canvas
 
 
@@ -17,7 +17,7 @@ async def validate_update_canvas_command(client, command_text: str) -> Tuple[str
     if channel_name.startswith("#"):
         channel_name = channel_name[1:]  # Remove the '#' prefix if present
 
-    channel_id = await search_channel_by_name(client, channel_name)
+    channel_id = await search_channel_id_by_name(client, channel_name)
 
     if not channel_id:
         raise ValueError(f"Channel '{channel_name}' not found. Make sure the bot is invited to the channel.")
